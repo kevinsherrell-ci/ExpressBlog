@@ -53,7 +53,7 @@ const validateUserData = (userData) => {
     }
     if(userData.favoriteFoods.length > 0){
         userData.favoriteFoods.forEach(food => {
-            if (isString(food)) {
+            if (!isString(food)) {
                 addError("favoriteFoods", "favorite foods must be strings");
             }
         })
