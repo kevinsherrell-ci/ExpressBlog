@@ -36,6 +36,7 @@ router.post("/create-one", (req, res) => {
     userList.push(userData);
     console.log("userList", userList);
     return res.json({
+        isValid: userDataCheck.isValid,
         success: true
     });
 })
