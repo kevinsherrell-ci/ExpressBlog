@@ -27,7 +27,7 @@ router.post("/create-one", (req, res) => {
     const userDataCheck = validateUserData(userData);
 
     if (userDataCheck.isValid === false) {
-        return res.json({
+        return res.status(500).json({
             success: false,
             errors: userDataCheck.errors
         });
@@ -35,7 +35,7 @@ router.post("/create-one", (req, res) => {
 
     userList.push(userData);
     console.log("userList", userList);
-    return res.json({
+    return res.status(201).json({
         isValid: userDataCheck.isValid,
         success: true
     });
