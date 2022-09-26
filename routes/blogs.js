@@ -1,5 +1,7 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+
+const blogValidator = require('../validation/blog');
 
 const sampleBlogs = [
     {
@@ -87,6 +89,79 @@ router.get("/single/:titleToGet", function(req, res, next){
 
 })
 
+router.post('/create-one', (req, res)=>{
+    console.log("create one blog is running");
+    const blog = {
+        title: req.body.title,
+        text: req.body.text,
+        author: req.body.author,
+        category: req.body.category || [],
+        createdAt: Date.now(),
+        lastModified: Date.now(),
+    }
+    const checkBlog = blogValidator(blog);
+    if(checkBlog.isValid === false){
+       return  res.status(500).json({
+            success: false,
+            errors: checkBlog.errors
+        })
+    }
+    sampleBlogs.push(blog);
+    console.log(sampleBlogs);
+    return res.status(201).json({
+        success: true,
+        isValid: checkBlog.isValid
+    })
+
+})
+router.put('/update-one/:blogTitle', (req, res)=>{
+    const indexFound = sampleBlogs.findIndex(blog=> blog.title === req.params.blogTitle);
+    const blogFound = sampleBlogs[indexFound];
+    const blogToUpdate = {...sampleBlogs[indexFound]};
+    if(blogFound){
+        Object.keys(blogToUpdate).forEach(key=>{
+
+            if(Object.keys(blogToUpdate).includes(key)){
+                if(blogToUpdate[key] !== req.body[key] && req.body[key] !== undefined){
+                    // console.log("blogFound", blogFound[key]);
+                    // console.log("key", key);
+                    blogToUpdate[key] = req.body[key];
+                    // console.log("updated", blogFound[key]);
+                }
+            }
+        })
+        console.log("original blog", blogFound);
+        console.log("updated blog", blogToUpdate);
+    }else{
+        return res.json({
+            success: false,
+            message: "blog not found"
+        })
+    }
+
+    const checkBlog = blogValidator(blogFound);
+
+    if(checkBlog.isValid === false){
+        return res.status(500).json({
+            success: false,
+            errors: checkBlog.errors
+        })
+    }
+    if(JSON.stringify(blogFound) === JSON.stringify(blogToUpdate)){
+        return res.status(200).json({
+            success: true,
+            message: "not updated"
+        })
+    }
+    console.log(blogFound, blogToUpdate);
+    sampleBlogs.splice(indexFound, 1, blogToUpdate);
+    // console.log(sampleBlogs);
+    return res.status(201).json({
+        success: true,
+        isValid: checkBlog.isValid
+    })
+
+})
 router.delete("/single/:titleToDelete", function(req, res, next){
     let titleToDelete;
     if(req.params.titleToDelete){

@@ -25,7 +25,7 @@ const validateBlogData = (blogData) => {
     if (!isString(blogData.title)) {
         addError("title", "title must be a string");
     }
-    if(blogData.title.length > 40){
+    if(!isEmpty(blogData.title) && blogData.title.length > 40){
         addError("title", "title must be less than 40 characters (including spaces)");
     }
     // text checks
@@ -42,19 +42,21 @@ const validateBlogData = (blogData) => {
     if (!isString(blogData.author)) {
         addError("author", "author must be a string");
     }
-    if(blogData.author.length > 40){
+    if(!isEmpty(blogData.author) && blogData.author.length > 40){
         addError("author", "author must not be greater than 40 characters (including spaces");
     }
 
     // category food checks
-
+    if(isEmpty(blogData.category)){
+        addError("category", "category must not be empty");
+    }
     if (!isArray(blogData.category)) {
         addError("category", "category must be an array");
     }
-    if(blogData.category.length > 0){
+    if(isArray(blogData.category) && blogData.category.length > 0){
         blogData.category.forEach(category => {
             if (!isString(category)) {
-                addError("category", "category must be strings");
+                addError("category", "categories must be strings");
             }
         })
     }
@@ -73,4 +75,4 @@ const validateBlogData = (blogData) => {
 
 }
 
-module.exports = validateUserData;
+module.exports = validateBlogData;
